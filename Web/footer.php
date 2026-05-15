@@ -2,7 +2,9 @@
     <h2 class="mb-6 text-3xl font-bold">Following</h2>
     <div class="space-y-5">
         <div class="flex items-center gap-3">
-            <div class="h-12 w-12 rounded-full bg-pink-500"></div>
+            <div class="h-12 w-12 rounded-full bg-pink-500">
+                <img src="" alt="pfp" class="h-10 w-10 rounded-full">
+            </div>
             <div>
                 <p class="font-bold">placeholder user</p>
             </div>
