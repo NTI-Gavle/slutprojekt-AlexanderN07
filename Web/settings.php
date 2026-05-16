@@ -25,7 +25,7 @@
             <a href="" class="block hover:text-pink-700">Help</a>
             <a href="" class="block hover:text-pink-700">About</a>
             <hr class="border-pink-800">
-            <a href="" class="block text-pink-700">Log out</a>
+            <a href="logout.php" class="block text-pink-700">Log out</a>
         </section>
     </div>
     <?php include 'footer.php'; ?>

@@ -1,3 +1,18 @@
+<?php
+require_once 'functions.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id']) && trim($_POST['content'] ?? '') !== ''){
+    create_post(current_user_id(), trim($_POST['content']));
+    header('Location: home.php');
+    exit;
+};
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['action']) && $_POST['action'] == 'login') {
+        include 'login.php';
+    } elseif (isset($_POST['action']) && $_POST['action'] == 'register') {
+        include 'register.php';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,21 +53,9 @@
                 </button>
             </div>
         </form>
-        <div class="border-b border-pink-800 p-4">
-            <div class="flex gap-3">
-                <div class="h-12 w-12 rounded-full bg-pink-500">
-                    <img src="" alt="pfp" class="h-10 w-10 rounded-full">
-                </div>
-                <div>
-                    future posts
-                </div>
-            </div>
-        </div>
-
+        <?php foreach (get_posts() as $post) include 'post-card.php'; ?>
     </main>
     <?php include 'footer.php'; ?>
-
 </div>
-
 </body>
 </html>

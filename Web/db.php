@@ -1,18 +1,20 @@
 <?php
-require_once __DIR__ . '/../config/env.php';
-
-// Load the .env file
-$env = loadEnv(__DIR__ . '/../.env');
+session_start();
 
 try {
+
     $pdo = new PDO(
-        "mysql:host=localhost;dbname=quiz;charset=utf8mb4",
+        "mysql:host=localhost;dbname=finalproj;charset=utf8mb4",
         "root",
-        getenv('DB_PASS')
+        getenv('DB_PASS') ?: ''
     );
-    echo 'Connected to database'; // Remove after it works
-    $dbconn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-}
-catch(PDOException $e){
-    echo 'Connection failed: ' . $e->getMessage();
+
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+
+    die("Database connection failed: " . $e->getMessage());
+
 }
