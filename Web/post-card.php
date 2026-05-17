@@ -3,14 +3,16 @@
         <div class="mb-2 text-sm text-gray-300">↻ Reposted by <?= e($post['reposted_by']) ?></div>
     <?php endif; ?>
     <div class="flex gap-3">
-        <div class="h-10 w-10 shrink-0 rounded-full bg-pink-500">
+        <a href="profile.php?id=<?= (int)$post['user_id'] ?>" class="h-10 w-10 shrink-0 rounded-full bg-pink-500 overflow-hidden">
             <?php if(!empty($post['profile_picture_url'])): ?>
                 <img src="" alt="pfp" class="h-10 w-10 shrink-0 rounded-full">
             <?php endif; ?>
-        </div>
+        </a>
         <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2">
-                <b><?= e($post['username']) ?></b>
+                <a href="profile.php?id=<?= (int)$post['user_id'] ?>" class="font-bold hover:underline">
+                    <?= e($post['username']) ?>
+                </a>
                 <span class="text-gray-300">
                     @<?= e($post['username']) ?>
                     <b>|</b>

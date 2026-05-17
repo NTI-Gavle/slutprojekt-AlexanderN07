@@ -562,3 +562,74 @@ function toggle_repost(?int $postId, ?int $commentId, int $userId): void{
         ]);
     }
 }
+function toggle_follow(int $followingId, int $followerId): void {
+    global $pdo;
+    if ($followingId === $followerId) {
+        return;
+    }
+    $stmt = $pdo->prepare("
+        SELECT id
+        FROM follows
+        WHERE follower_id = ?
+        AND following_id = ?
+        LIMIT 1
+    ");
+    $stmt->execute([
+        $followerId,
+        $followingId
+    ]);
+    $existing = $stmt->fetch();
+    if ($existing) {
+        $stmt = $pdo->prepare("
+            DELETE FROM follows
+            WHERE id = ?
+        ");
+        $stmt->execute([
+            $existing['id']
+        ]);
+    } else {
+        $stmt = $pdo->prepare("
+            INSERT INTO follows (
+                follower_id,
+                following_id,
+                created_at
+            )
+            VALUES (?, ?, NOW())
+        ");
+        $stmt->execute([
+            $followerId,
+            $followingId
+        ]);
+    }
+}
+function is_following(int $followingId, int $followerId): bool {
+    global $pdo;
+    $stmt = $pdo->prepare("
+        SELECT id
+        FROM follows
+        WHERE follower_id = ?
+        AND following_id = ?
+        LIMIT 1
+    ");
+    $stmt->execute([
+        $followerId,
+        $followingId
+    ]);
+    return (bool)$stmt->fetch();
+}
+function get_following(int $userId): array {
+    global $pdo;
+    $stmt = $pdo->prepare("
+        SELECT
+            u.*
+        FROM follows f
+        JOIN users u
+            ON u.id = f.following_id
+        WHERE f.follower_id = ?
+        ORDER BY f.created_at DESC
+    ");
+    $stmt->execute([
+        $userId
+    ]);
+    return $stmt->fetchAll();
+}
