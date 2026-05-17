@@ -24,6 +24,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_comment_id']) &&
     header("location: post.php?id=$postId");
     exit;
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['favorite_post_id']) && isset($_SESSION['user_id'])){
+    toggle_favorite(
+        (int)$_POST['favorite_post_id'],
+        current_user_id()
+    );
+    header("Location: post.php?id=$postId");
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['favorite_comment_id']) && isset($_SESSION['user_id'])){
+    toggle_comment_favorite(
+        (int)$_POST['favorite_comment_id'],
+        current_user_id()
+    );
+    header("Location: post.php?id=$postId");
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repost_post_id']) && isset($_SESSION['user_id'])){
+    toggle_repost(
+        (int)$_POST['repost_post_id'],
+        null,
+        current_user_id()
+    );
+    header("Location: post.php?id=$postId");
+    exit;
+}
+
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repost_comment_id']) && isset($_SESSION['user_id'])){
+    toggle_repost(
+        null,
+        (int)$_POST['repost_comment_id'],
+        current_user_id()
+    );
+    header("Location: post.php?id=$postId");
+    exit;
+}
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id']) && trim($_POST['content'] ?? '') !== ''){
     create_comment($postId, current_user_id(), trim($_POST['content']));
     header("Location: post.php?id=$postId");
@@ -72,9 +109,19 @@ $comments = get_comments($postId);
                     <input type="hidden" name="like_post_id" value="<?= (int)$post['id'] ?>">
                     <button type="submit">♡ <?= (int)$post['like_count'] ?></button>
                 </form>
-                <button>↻ </button>
+                <form method="POST">
+                    <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
+                        <input type="hidden" name="repost_comment_id" value="<?= (int)$post['id'] ?>">
+                    <?php else: ?>
+                        <input type="hidden" name="repost_post_id" value="<?= (int)$post['id'] ?>">
+                    <?php endif; ?>
+                    <button type="submit">↻ <?= (int)($post['repost_count'] ?? 0) ?></button>
+                </form>
                 <button>💬 <?= (int)$post['comment_count'] ?></button>
-                <button>☆ <?= (int)$post['favorite_count'] ?></button>
+                <form method="POST">
+                    <input type="hidden" name="favorite_post_id" value="<?= (int)$post['id'] ?>">
+                    <button type="submit">☆ <?= (int)$post['favorite_count'] ?></button>
+                </form>
                 <button>↗</button>
             </div>
         </article>
@@ -116,9 +163,19 @@ $comments = get_comments($postId);
                         <input type="hidden" name="like_comment_id" value="<?= (int)$comment['id'] ?>">
                         <button type="submit">♡ <?= (int)$comment['like_count'] ?></button>
                     </form>
-                    <button>↻ </button>
+                    <form method="POST">
+                        <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
+                            <input type="hidden" name="repost_comment_id" value="<?= (int)$comment['id'] ?>">
+                        <?php else: ?>
+                            <input type="hidden" name="repost_post_id" value="<?= (int)$comment['id'] ?>">
+                        <?php endif; ?>
+                        <button type="submit">↻ <?= (int)($comment['repost_count'] ?? 0) ?></button>
+                    </form>
                     <button>💬 <?= (int)$comment['comment_count'] ?></button>
-                    <button>☆ <?= (int)$comment['favorite_count'] ?></button>
+                    <form method="POST">
+                        <input type="hidden" name="favorite_comment_id" value="<?= (int)$comment['id'] ?>">
+                        <button type="submit">☆ <?= (int)$comment['favorite_count'] ?></button>
+                    </form>
                     <button>↗</button>
                 </div>
             </article>

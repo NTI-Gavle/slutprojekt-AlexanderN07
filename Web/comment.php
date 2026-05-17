@@ -16,6 +16,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_comment_id']) &&
     header("location: comment.php?id=$commentId");
     exit;
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['favorite_comment_id']) && isset($_SESSION['user_id'])){
+    toggle_comment_favorite(
+        (int)$_POST['favorite_comment_id'],
+        current_user_id()
+    );
+    header("Location: comment.php?id=$commentId");
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repost_comment_id']) && isset($_SESSION['user_id'])){
+    toggle_repost(
+        null,
+        (int)$_POST['repost_comment_id'],
+        current_user_id()
+    );
+    header("Location: comment.php?id=$commentId");
+    exit;
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id']) && trim($_POST['content'] ?? '') !== ''){
     create_comment(
         (int)$comment['post_id'],
@@ -74,9 +91,19 @@ $replies = get_comment_replies($commentId);
                             <input type="hidden" name="like_comment_id" value="<?= (int)$comment['id'] ?>">
                             <button type="submit">♡ <?= (int)$comment['like_count'] ?></button>
                         </form>
-                        <button type="button">↻</button>
+                        <form method="POST">
+                            <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
+                                <input type="hidden" name="repost_comment_id" value="<?= (int)$comment['id'] ?>">
+                            <?php else: ?>
+                                <input type="hidden" name="repost_post_id" value="<?= (int)$comment['id'] ?>">
+                            <?php endif; ?>
+                            <button type="submit">↻ <?= (int)($comment['repost_count'] ?? 0) ?></button>
+                        </form>
                         <button type="button">💬 <?= (int)$comment['comment_count'] ?></button>
-                        <button type="button">☆ <?= (int)$comment['favorite_count'] ?></button>
+                        <form method="POST">
+                            <input type="hidden" name="favorite_comment_id" value="<?= (int)$comment['id'] ?>">
+                            <button type="submit">☆ <?= (int)$comment['favorite_count'] ?></button>
+                        </form>
                         <button type="button">↗</button>
                     </div>
                 </div>
@@ -120,9 +147,19 @@ $replies = get_comment_replies($commentId);
                         <input type="hidden" name="like_comment_id" value="<?= (int)$reply['id'] ?>">
                         <button type="submit">♡ <?= (int)$reply['like_count'] ?></button>
                     </form>
-                    <button>↻ </button>
+                    <form method="POST">
+                        <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
+                            <input type="hidden" name="repost_comment_id" value="<?= (int)$reply['id'] ?>">
+                        <?php else: ?>
+                            <input type="hidden" name="repost_post_id" value="<?= (int)$reply['id'] ?>">
+                        <?php endif; ?>
+                        <button type="submit">↻ <?= (int)($reply['repost_count'] ?? 0) ?></button>
+                    </form>
                     <button>💬 <?= (int)$reply['comment_count'] ?></button>
-                    <button>☆ <?= (int)$reply['favorite_count'] ?></button>
+                    <form method="POST">
+                        <input type="hidden" name="favorite_comment_id" value="<?= (int)$reply['id'] ?>">
+                        <button type="submit">☆ <?= (int)$reply['favorite_count'] ?></button>
+                    </form>
                     <button>↗</button>
                 </div>
             </article>

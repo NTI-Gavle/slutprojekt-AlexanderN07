@@ -35,14 +35,37 @@ function get_posts(): array{
             p.*,
             u.username,
             u.profile_picture_url,
+            NULL AS reposted_by,
+            'post' AS content_type,
             (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS like_count,
             (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) AS favorite_count,
+            (SELECT COUNT(*) FROM reposts r WHERE r.post_id = p.id) AS repost_count,
             (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id and c.is_deleted = 0) as comment_count
         FROM posts p
         JOIN users u
             ON u.id = p.user_id
         WHERE p.is_deleted = 0
-        ORDER BY p.created_at DESC
+        UNION ALL
+        SELECT
+            p.*,
+            u.username,
+            u.profile_picture_url,
+            ru.username AS reposted_by,
+            'post' AS content_type,
+            (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS like_count,
+            (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) AS favorite_count,
+            (SELECT COUNT(*) FROM reposts r2 WHERE r2.post_id = p.id) AS repost_count,
+            (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.is_deleted = 0) AS comment_count
+        FROM reposts r
+        JOIN posts p
+            ON p.id = r.post_id
+        JOIN users u
+            ON u.id = p.user_id
+        JOIN users ru
+            ON ru.id = r.user_id
+        WHERE p.is_deleted = 0
+        AND r.post_id IS NOT NULL
+        ORDER BY created_at DESC
         LIMIT 50
     ";
     $stmt = $pdo->query($sql);
@@ -57,6 +80,7 @@ function get_post(int $postId): ?array{
             u.profile_picture_url,
             (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS like_count,
             (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) AS favorite_count,
+            (SELECT COUNT(*) FROM reposts r WHERE r.post_id = p.id) AS repost_count,
             (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id and c.is_deleted = 0) as comment_count
         FROM posts p
         JOIN users u
@@ -101,6 +125,7 @@ function get_comments(int $postId): array{
             u.profile_picture_url,
             (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id) AS like_count,
             (SELECT COUNT(*) FROM comment_favorites cf WHERE cf.comment_id = c.id) AS favorite_count,
+            (SELECT COUNT(*) FROM reposts r WHERE r.comment_id = c.id) AS repost_count,
             (SELECT COUNT(*) FROM comments replies WHERE replies.parent_comment_id = c.id AND replies.is_deleted = 0) AS comment_count
         FROM comments c
         JOIN users u
@@ -122,6 +147,7 @@ function get_comment(int $commentId): ?array {
             u.profile_picture_url,
             (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id) AS like_count,
             (SELECT COUNT(*) FROM comment_favorites cf WHERE cf.comment_id = c.id) AS favorite_count,
+            (SELECT COUNT(*) FROM reposts r WHERE r.comment_id = c.id) AS repost_count,
             (SELECT COUNT(*) FROM comments replies WHERE replies.parent_comment_id = c.id AND replies.is_deleted = 0) AS comment_count
         FROM comments c
         JOIN users u
@@ -144,6 +170,7 @@ function get_comment_replies(int $commentId): array {
             u.profile_picture_url,
             (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id) AS like_count,
             (SELECT COUNT(*) FROM comment_favorites cf WHERE cf.comment_id = c.id) AS favorite_count,
+            (SELECT COUNT(*) FROM reposts r WHERE r.comment_id = c.id) AS repost_count,
             (SELECT COUNT(*) FROM comments replies WHERE replies.parent_comment_id = c.id AND replies.is_deleted = 0) AS comment_count
         FROM comments c
         JOIN users u
@@ -168,7 +195,8 @@ function get_profile(int $userId): ?array {
             (SELECT COUNT(*) FROM likes l WHERE l.user_id = u.id) +
             (SELECT COUNT(*) FROM comment_likes cl WHERE cl.user_id = u.id) AS liked_count,
             (SELECT COUNT(*) FROM favorites f WHERE f.user_id = u.id) +
-            (SELECT COUNT(*) FROM comment_favorites cf WHERE cf.user_id = u.id) AS favorite_count
+            (SELECT COUNT(*) FROM comment_favorites cf WHERE cf.user_id = u.id) AS favorite_count,
+            (SELECT COUNT(*) FROM reposts r WHERE r.user_id = u.id) AS repost_count
         FROM users u
         WHERE u.id = ?
         LIMIT 1
@@ -194,6 +222,7 @@ function get_profile_content(int $userId, string $type = 'posts'): array {
                     'post' AS content_type,
                     (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS like_count,
                     (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) AS favorite_count,
+                    (SELECT COUNT(*) FROM reposts r WHERE r.post_id = p.id) AS repost_count,
                     (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.is_deleted = 0) AS comment_count
                 FROM likes l
                 JOIN posts p
@@ -215,6 +244,7 @@ function get_profile_content(int $userId, string $type = 'posts'): array {
                     'comment' AS content_type,
                     (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id) AS like_count,
                     (SELECT COUNT(*) FROM comment_favorites cf WHERE cf.comment_id = c.id) AS favorite_count,
+                    (SELECT COUNT(*) FROM reposts r WHERE r.comment_id = c.id) AS repost_count,
                     (SELECT COUNT(*) FROM comments replies WHERE replies.parent_comment_id = c.id AND replies.is_deleted = 0) AS comment_count
                 FROM comment_likes cl
                 JOIN comments c
@@ -241,6 +271,7 @@ function get_profile_content(int $userId, string $type = 'posts'): array {
                     'post' AS content_type,
                     (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS like_count,
                     (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) AS favorite_count,
+                    (SELECT COUNT(*) FROM reposts r WHERE r.post_id = p.id) AS repost_count,
                     (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.is_deleted = 0) AS comment_count
                 FROM favorites f
                 JOIN posts p
@@ -262,6 +293,7 @@ function get_profile_content(int $userId, string $type = 'posts'): array {
                     'comment' AS content_type,
                     (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id) AS like_count,
                     (SELECT COUNT(*) FROM comment_favorites cf WHERE cf.comment_id = c.id) AS favorite_count,
+                    (SELECT COUNT(*) FROM reposts r WHERE r.comment_id = c.id) AS repost_count,
                     (SELECT COUNT(*) FROM comments replies WHERE replies.parent_comment_id = c.id AND replies.is_deleted = 0) AS comment_count
                 FROM comment_favorites cf
                 JOIN comments c
@@ -274,23 +306,71 @@ function get_profile_content(int $userId, string $type = 'posts'): array {
             ");
             $stmt->execute([$userId, $userId]);
             return $stmt->fetchAll();
-        default:
+            default:
+
             $stmt = $pdo->prepare("
                 SELECT
                     p.*,
                     u.username,
                     u.profile_picture_url,
+                    NULL AS reposted_by,
+                    'post' AS content_type,
                     (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS like_count,
                     (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) AS favorite_count,
+                    (SELECT COUNT(*) FROM reposts r WHERE r.post_id = p.id) AS repost_count,
                     (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.is_deleted = 0) AS comment_count
                 FROM posts p
                 JOIN users u
                     ON u.id = p.user_id
                 WHERE p.user_id = ?
                 AND p.is_deleted = 0
-                ORDER BY p.created_at DESC
+                UNION ALL
+                SELECT
+                    p.*,
+                    u.username,
+                    u.profile_picture_url,
+                    ru.username AS reposted_by,
+                    'post' AS content_type,
+                    (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS like_count,
+                    (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) AS favorite_count,
+                    (SELECT COUNT(*) FROM reposts r2 WHERE r2.post_id = p.id) AS repost_count,
+                    (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.is_deleted = 0) AS comment_count
+                FROM reposts r
+                JOIN posts p
+                    ON p.id = r.post_id
+                JOIN users u
+                    ON u.id = p.user_id
+                JOIN users ru
+                    ON ru.id = r.user_id
+                WHERE r.user_id = ?
+                AND r.post_id IS NOT NULL
+                AND p.is_deleted = 0
+                UNION ALL
+                SELECT
+                    c.id,
+                    NULL AS parent_post_id,
+                    c.content,
+                    c.created_at,
+                    c.updated_at,
+                    c.is_deleted,
+                    NULL AS shared_link,
+                    c.user_id,
+                    u.username,
+                    u.profile_picture_url,
+                    NULL AS reposted_by,
+                    'comment' AS content_type,
+                    (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id) AS like_count,
+                    (SELECT COUNT(*) FROM comment_favorites cf WHERE cf.comment_id = c.id) AS favorite_count,
+                    (SELECT COUNT(*) FROM reposts r WHERE r.comment_id = c.id) AS repost_count,
+                    (SELECT COUNT(*) FROM comments replies WHERE replies.parent_comment_id = c.id AND replies.is_deleted = 0) AS comment_count
+                FROM comments c
+                JOIN users u
+                    ON u.id = c.user_id
+                WHERE c.user_id = ?
+                AND c.is_deleted = 0
+                ORDER BY created_at DESC
             ");
-            $stmt->execute([$userId]);
+            $stmt->execute([$userId, $userId, $userId]);
             return $stmt->fetchAll();
         
     }
@@ -362,6 +442,123 @@ function toggle_comment_like(int $commentId, int $userId): void{
         $stmt->execute([
             $commentId,
             $userId
+        ]);
+    }
+}
+function toggle_favorite(int $postId, int $userId): void{
+    global $pdo;
+    $stmt = $pdo->prepare("
+        SELECT id
+        FROM favorites
+        WHERE post_id = ?
+        AND user_id = ?
+        LIMIT 1
+    ");
+    $stmt->execute([
+        $postId,
+        $userId
+    ]);
+    $existing = $stmt->fetch();
+    if($existing){
+        $stmt = $pdo->prepare("
+            DELETE FROM favorites
+            WHERE id = ?
+        ");
+        $stmt->execute([
+            $existing['id']
+        ]);
+    }
+    else{
+        $stmt = $pdo->prepare("
+            INSERT INTO favorites
+            (post_id, user_id, created_at)
+            VALUES (?, ?, NOW())
+        ");
+        $stmt->execute([
+            $postId,
+            $userId
+        ]);
+    }
+}
+function toggle_comment_favorite(int $commentId, int $userId): void{
+    global $pdo;
+    $stmt = $pdo->prepare("
+        SELECT id
+        FROM comment_favorites
+        WHERE comment_id = ?
+        AND user_id = ?
+        LIMIT 1
+    ");
+    $stmt->execute([
+        $commentId,
+        $userId
+    ]);
+    $existing = $stmt->fetch();
+    if($existing){
+        $stmt = $pdo->prepare("
+            DELETE FROM comment_favorites
+            WHERE id = ?
+        ");
+        $stmt->execute([
+            $existing['id']
+        ]);
+    }
+    else{
+        $stmt = $pdo->prepare("
+            INSERT INTO comment_favorites
+            (comment_id, user_id, created_at)
+            VALUES (?, ?, NOW())
+        ");
+        $stmt->execute([
+            $commentId,
+            $userId
+        ]);
+    }
+}
+function toggle_repost(?int $postId, ?int $commentId, int $userId): void{
+    global $pdo;
+    $stmt = $pdo->prepare("
+        SELECT id
+        FROM reposts
+        WHERE user_id = ?
+        AND (
+            (post_id = ? AND ? IS NOT NULL)
+            OR
+            (comment_id = ? AND ? IS NOT NULL)
+        )
+        LIMIT 1
+    ");
+    $stmt->execute([
+        $userId,
+        $postId,
+        $postId,
+        $commentId,
+        $commentId
+    ]);
+    $existing = $stmt->fetch();
+    if($existing){
+        $stmt = $pdo->prepare("
+            DELETE FROM reposts
+            WHERE id = ?
+        ");
+        $stmt->execute([
+            $existing['id']
+        ]);
+    }
+    else{
+        $stmt = $pdo->prepare("
+            INSERT INTO reposts(
+                user_id,
+                post_id,
+                comment_id,
+                created_at
+            )
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([
+            $userId,
+            $postId,
+            $commentId
         ]);
     }
 }

@@ -42,6 +42,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_comment_id']) &&
     header("location: profile.php?tab=$tab");
     exit;
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['favorite_post_id']) && isset($_SESSION['user_id'])){
+    toggle_favorite(
+        (int)$_POST['favorite_post_id'],
+        current_user_id()
+    );
+    header("Location: profile.php?tab=$tab");
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['favorite_comment_id']) && isset($_SESSION['user_id'])){
+    toggle_comment_favorite(
+        (int)$_POST['favorite_comment_id'],
+        current_user_id()
+    );
+    header("Location: profile.php?tab=$tab");
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repost_post_id']) && isset($_SESSION['user_id'])){
+    toggle_repost(
+        (int)$_POST['repost_post_id'],
+        null,
+        current_user_id()
+    );
+    header("Location: profile.php?tab=$tab");
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repost_comment_id']) && isset($_SESSION['user_id'])){
+    toggle_repost(
+        null,
+        (int)$_POST['repost_comment_id'],
+        current_user_id()
+    );
+    header("Location: profile.php?tab=$tab");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -73,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_comment_id']) &&
                 <p class="mt-3 mb-3"><?= e($profile['bio'] ?? '') ?></p>
                 <hr class="border-pink-800">
                 <div class="mt-4 flex gap-6 text-gray-200">
-                    <a href="profile.php?tab=posts" class="hover:text-pink-400"><b><?= (int)$profile['post_count'] ?></b> Posts</a> |
+                    <a href="profile.php?tab=posts" class="hover:text-pink-400"><b><?= (int)$profile['post_count'] + (int)$profile['repost_count'] ?></b> Posts</a> |
                     <a href="profile.php?tab=likes" class="hover:text-pink-400"><b><?= (int)$profile['liked_count'] ?></b> Liked</a> |
                     <a href="profile.php?tab=favorites" class="hover:text-pink-400"><b><?= (int)$profile['favorite_count'] ?></b> Favorites</a>
                 </div>
