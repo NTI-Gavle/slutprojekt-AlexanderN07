@@ -8,7 +8,7 @@
         <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2">
                 <b><?= e($post['username']) ?></b>
-                <span>
+                <span class="text-gray-300">
                     @<?= e($post['username']) ?>
                     <b>|</b>
                     <?php
@@ -22,16 +22,18 @@
                     ?>
                 </span>
             </div>
-            <div class="mt-1">
-                <?= e($post['content']) ?>
-            </div>
-            <div class="mt-3 flex max-w-md justify-between text-gray-200">
-                <button>♡ <?= (int)$post['like_count'] ?></button>
-                <button>↻ </button>
-                <button>💬 <?= (int)$post['comment_count'] ?></button>
-                <button>☆ <?= (int)$post['favorite_count'] ?></button>
-                <button>↗</button>
-            </div>
+            <a href="post.php?id=<?= (int)$post['id'] ?>">
+                <div class="mt-1">
+                    <?= e($post['content']) ?>
+                </div>
+                <div class="mt-3 flex max-w-md justify-between text-gray-200">
+                    <button>♡ <?= (int)$post['like_count'] ?></button>
+                    <button>↻ </button>
+                    <button>💬 <?= (int)$post['comment_count'] ?></button>
+                    <button>☆ <?= (int)$post['favorite_count'] ?></button>
+                    <button>↗</button>
+                </div>
+            </a>
         </div>
     </div>
 </article>
