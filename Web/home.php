@@ -12,6 +12,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         include 'register.php';
     }
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_post_id']) && isset($_SESSION['user_id'])){
+    toggle_like(
+        (int)$_POST['like_post_id'],
+        current_user_id()
+    );
+    header('location: home.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

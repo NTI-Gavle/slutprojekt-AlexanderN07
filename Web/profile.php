@@ -1,3 +1,48 @@
+<?php
+
+require_once 'functions.php';
+
+if (!isset($_SESSION['user_id'])) {
+    die('You must be logged in.');
+}
+
+$profile = get_profile(current_user_id());
+if (!$profile) {
+    die('Profile not found.');
+}
+$tab = $_GET['tab'] ?? 'posts';
+
+$allowedTabs = [
+    'posts',
+    'likes',
+    'favorites'
+];
+
+if (!in_array($tab, $allowedTabs, true)) {
+    $tab = 'posts';
+}
+
+$content = get_profile_content(
+    current_user_id(),
+    $tab
+);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_post_id']) && isset($_SESSION['user_id'])){
+    toggle_like(
+        (int)$_POST['like_post_id'],
+        current_user_id()
+    );
+    header("location: profile.php?tab=$tab");
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_comment_id']) && isset($_SESSION['user_id'])){
+    toggle_comment_like(
+        (int)$_POST['like_comment_id'],
+        current_user_id()
+    );
+    header("location: profile.php?tab=$tab");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,17 +68,19 @@
                 <div class="-mt-12 h-25 w-25 rounded-full border-4 border-pink-300 bg-pink-500">
                     <img src="" alt="pfp" class="h-25 w-25 rounded-full">
                 </div>
-                <h2 class="mt-3 text-2xl font-bold">possibly nickname<!-- otherwise username and the next element "p" might get removed--></h2>
-                <p class="text-gray-200">@Username</p>
-                <p class="mt-3 mb-3">bio</p>
+                <h2 class="mt-3 text-2xl font-bold"><?= e($profile['username']) ?></h2>
+                <p class="text-gray-200">@<?= e($profile['username']) ?></p>
+                <p class="mt-3 mb-3"><?= e($profile['bio'] ?? '') ?></p>
                 <hr class="border-pink-800">
                 <div class="mt-4 flex gap-6 text-gray-200">
-                    <span><b>0<!-- placeholder for amount of posts --></b>Posts</span>
-                    <span><b>0<!-- placeholder for amount of media --></b>Media</span>
-                    <span><b>0<!-- placeholder for amount of liked --></b>Liked</span>
-                    <span><b>0<!-- placeholder for amount of favorited --></b>Favorites</span>
+                    <a href="profile.php?tab=posts" class="hover:text-pink-400"><b><?= (int)$profile['post_count'] ?></b> Posts</a> |
+                    <a href="profile.php?tab=likes" class="hover:text-pink-400"><b><?= (int)$profile['liked_count'] ?></b> Liked</a> |
+                    <a href="profile.php?tab=favorites" class="hover:text-pink-400"><b><?= (int)$profile['favorite_count'] ?></b> Favorites</a>
                 </div>
             </div>
+            <?php foreach ($content as $post): ?>
+                <?php include 'post-card.php'; ?>
+            <?php endforeach; ?>
         </section>
     </div>
     <?php include 'footer.php'; ?>

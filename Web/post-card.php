@@ -22,18 +22,25 @@
                     ?>
                 </span>
             </div>
-            <a href="post.php?id=<?= (int)$post['id'] ?>">
+            <a href="<?= (($post['content_type'] ?? 'post') === 'comment') ? 'comment.php?id=' . (int)$post['id'] : 'post.php?id=' . (int)$post['id'] ?>">
                 <div class="mt-1">
                     <?= e($post['content']) ?>
                 </div>
-                <div class="mt-3 flex max-w-md justify-between text-gray-200">
-                    <button>♡ <?= (int)$post['like_count'] ?></button>
-                    <button>↻ </button>
-                    <button>💬 <?= (int)$post['comment_count'] ?></button>
-                    <button>☆ <?= (int)$post['favorite_count'] ?></button>
-                    <button>↗</button>
-                </div>
             </a>
+            <div class="mt-3 flex max-w-md justify-between text-gray-200">
+                <form method="POST">
+                <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
+                    <input type="hidden" name="like_comment_id" value="<?= (int)$post['id'] ?>">
+                <?php else: ?>
+                    <input type="hidden" name="like_post_id" value="<?= (int)$post['id'] ?>">
+                <?php endif; ?>
+                    <button type="submit">♡ <?= (int)$post['like_count'] ?></button>
+                </form>
+                <button>↻ </button>
+                <button>💬 <?= (int)$post['comment_count'] ?></button>
+                <button>☆ <?= (int)$post['favorite_count'] ?></button>
+                <button>↗</button>
+            </div>
         </div>
     </div>
 </article>

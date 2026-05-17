@@ -8,6 +8,22 @@ $post = get_post($postId);
 if(!$post){
     die('Post not found');
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_post_id']) && isset($_SESSION['user_id'])){
+    toggle_like(
+        (int)$_POST['like_post_id'],
+        current_user_id()
+    );
+    header("location: post.php?id=$postId");
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_comment_id']) && isset($_SESSION['user_id'])){
+    toggle_comment_like(
+        (int)$_POST['like_comment_id'],
+        current_user_id()
+    );
+    header("location: post.php?id=$postId");
+    exit;
+}
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id']) && trim($_POST['content'] ?? '') !== ''){
     create_comment($postId, current_user_id(), trim($_POST['content']));
     header("Location: post.php?id=$postId");
@@ -29,7 +45,7 @@ $comments = get_comments($postId);
     <?php include 'header.php'; ?>
     <div>
         <div class="block border-b border-pink-800 p-4 font-bold">
-            <a href="home.php" class="-ml-3 w-20 p-4 hover:bg-fuchsia-900">←</a>
+            <button onclick="history.back()" class="-ml-3 w-20 h-15 hover:bg-fuchsia-900">←</button>
         </div>
         <article class="border-b border-pink-800 p-4">
             <div class="flex items-center gap-2">
@@ -52,7 +68,10 @@ $comments = get_comments($postId);
                 <?= e($post['content']) ?>
             </div>
             <div class="mt-3 flex max-w-md justify-between text-gray-200">
-                <button>♡ <?= (int)$post['like_count'] ?></button>
+                <form method="POST">
+                    <input type="hidden" name="like_post_id" value="<?= (int)$post['id'] ?>">
+                    <button type="submit">♡ <?= (int)$post['like_count'] ?></button>
+                </form>
                 <button>↻ </button>
                 <button>💬 <?= (int)$post['comment_count'] ?></button>
                 <button>☆ <?= (int)$post['favorite_count'] ?></button>
@@ -91,14 +110,17 @@ $comments = get_comments($postId);
                     <div class="mt-1">
                         <?= e($comment['content']) ?>
                     </div>
-                    <div class="mt-3 flex max-w-md justify-between text-gray-200">
-                        <button>♡ <?= (int)$comment['like_count'] ?></button>
-                        <button>↻ </button>
-                        <button>💬 <?= (int)$comment['comment_count'] ?></button>
-                        <button>☆ <?= (int)$comment['favorite_count'] ?></button>
-                        <button>↗</button>
-                    </div>
                 </a>
+                <div class="mt-3 flex max-w-md justify-between text-gray-200">
+                    <form method="POST">
+                        <input type="hidden" name="like_comment_id" value="<?= (int)$comment['id'] ?>">
+                        <button type="submit">♡ <?= (int)$comment['like_count'] ?></button>
+                    </form>
+                    <button>↻ </button>
+                    <button>💬 <?= (int)$comment['comment_count'] ?></button>
+                    <button>☆ <?= (int)$comment['favorite_count'] ?></button>
+                    <button>↗</button>
+                </div>
             </article>
         <?php endforeach; ?>
     </div>
