@@ -201,9 +201,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_bio']) && isse
                         </button>
                     </form>
                 <?php else: ?>
-                    <div class="max-w-100 wrap-break-word w-full rounded-2xl border border-pink-800 bg-fuchsia-950 p-2 outline-none mb-4 mt-4">
-                        <b class="mt-3 border-b-3 border-pink-500">Bio:</b>
-                        <p><?= e($profile['bio'] ?? '') ?></p>
+                    <div class="mt-4 mb-4 max-w-fit overflow-hidden rounded-2xl border border-pink-800 bg-fuchsia-950 p-4">
+                        <b class="border-b-3 border-pink-500">Bio:</b>
+                        <p class="mt-3 break-all whitespace-pre-wrap"><?= e($profile['bio'] ?? '') ?></p>
                     </div>
                 <?php endif; ?>
                 <hr class="border-pink-800">

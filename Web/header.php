@@ -2,7 +2,6 @@
     <input class="mb-8 inline-flex rounded-full border px-5 py-1 text-sm font-bold border-red" placeholder="Search"></input>
     <nav class="space-y-4 text-2xl font-semibold">
         <a href="home.php" class="block hover:text-pink-700">Home</a>
-        <a href="notifications.php" class="block hover:text-pink-700">Notifications</a>
         <a href="chats.php" class="block hover:text-pink-700">Chat</a>
         <a href="profile.php" class="block hover:text-pink-700">Profile</a>
         <a href="settings.php" class="block hover:text-pink-700">Settings</a>

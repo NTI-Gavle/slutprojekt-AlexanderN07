@@ -633,3 +633,22 @@ function get_following(int $userId): array {
     ]);
     return $stmt->fetchAll();
 }
+function get_chat_users(int $userId): array {
+    global $pdo;
+    $stmt = $pdo->prepare("
+        SELECT DISTINCT
+            u.*
+        FROM follows f1
+        JOIN follows f2
+            ON f1.following_id = f2.follower_id
+            AND f1.follower_id = f2.following_id
+        JOIN users u
+            ON u.id = f1.following_id
+        WHERE f1.follower_id = ?
+        ORDER BY u.username ASC
+    ");
+    $stmt->execute([
+        $userId
+    ]);
+    return $stmt->fetchAll();
+}
