@@ -41,3 +41,9 @@ function openSettingsPopup(id) {
 function closeSettingsPopup(id) {
     document.getElementById(id).classList.add('hidden');
 }
+function openPostModal() {
+    document.getElementById('post-modal').classList.remove('hidden');
+}
+function closePostModal() {
+    document.getElementById('post-modal').classList.add('hidden');
+}

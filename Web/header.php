@@ -15,6 +15,24 @@
         <?php endif; ?>
     </div>
 </aside>
+<div id="post-modal" class="hidden fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4" onclick="closePostModal()">
+    <div onclick="event.stopPropagation()" class="w-full max-w-2xl rounded-3xl border border-pink-800 bg-fuchsia-900 p-6">
+        <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-3xl font-bold">Create Post</h2>
+            <button type="button" onclick="closePostModal()" class="text-3xl cursor-pointer">
+                ×
+            </button>
+        </div>
+        <form method="POST">
+            <textarea name="content" placeholder="What's happening?" class="h-40 w-full resize-none rounded-2xl border border-pink-800 bg-fuchsia-950 p-4 outline-none"></textarea>
+            <div class="mt-4 flex justify-end">
+                <button type="submit" class="rounded-full bg-pink-500 px-6 py-3 font-bold hover:bg-pink-600 cursor-pointer">
+                    Post
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 <div id="reglog-container" class="hidden fixed inset-0 z-100 flex items-center justify-center" onclick="reglog()">
     <div id="login-container" class="hidden w-full max-w-md rounded-3xl border border-pink-800 bg-fuchsia-900 p-8 shadow-2xl" onclick="event.stopPropagation()">
         <h1 class="mb-6 text-center text-4xl font-bold">

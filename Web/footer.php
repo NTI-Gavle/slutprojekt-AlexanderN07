@@ -29,9 +29,9 @@ if (isset($_SESSION['user_id'])) {
         <h2 class="mb-6 text-3xl font-bold">Log in to see following</h2>
     <?php endif; ?>
 </aside>
-<nav class="fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-pink-800 bg-fuchsia-950 py-3 md:hidden">
-    <a href="home.php" class="cursor-pointer">Home</a>
-    <a href="chats.php" class="cursor-pointer">Chat</a>
-    <a href="profile.php" class="cursor-pointer">Profile</a>
-    <a href="settings.php" class="cursor-pointer">Settings</a>
+<nav class="fixed inset-x-0 bottom-0 z-20 flex h-16 items-center justify-around border-t border-pink-800 bg-fuchsia-950 md:hidden">
+    <a href="home.php" class="flex h-full items-center justify-center text-2xl leading-none cursor-pointer">🏠︎</a>
+    <a href="chats.php" class="flex h-full items-center justify-center text-2xl leading-none cursor-pointer">💬</a>
+    <a href="profile.php" class="flex h-full items-center justify-center text-2xl leading-none cursor-pointer">☺</a>
+    <a href="settings.php" class="flex h-full items-center justify-center text-2xl leading-none cursor-pointer">⚙</a>
 </nav>
