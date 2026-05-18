@@ -84,9 +84,7 @@ $messages = $stmt->fetchAll();
         <div class="flex min-h-screen flex-col">
             <header class="sticky top-0 z-10 border-b border-pink-800 bg-fuchsia-950 p-4">
                 <div class="flex items-center gap-3">
-                    <a href="chats.php" class="text-2xl">
-                        ←
-                    </a>
+                    <a href="chats.php" class="text-2xl cursor-pointer">←</a>
                     <b class="text-2xl"><?= e($otherUser['username']) ?></b>
                 </div>
             </header>
@@ -122,7 +120,7 @@ $messages = $stmt->fetchAll();
             <form method="POST" class="border-t border-pink-800 p-4">
                 <div class="flex gap-3">
                     <input type="text" name="content" placeholder="Write a message..." class="flex-1 rounded-full border border-pink-800 bg-fuchsia-900 px-4 py-3 outline-none">
-                    <button type="submit" class="rounded-full bg-pink-500 px-6 py-3 font-bold hover:bg-pink-600">
+                    <button type="submit" class="rounded-full bg-pink-500 px-6 py-3 font-bold hover:bg-pink-600 cursor-pointer">
                         Send
                     </button>
                 </div>

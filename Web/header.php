@@ -1,17 +1,17 @@
 <aside class="hidden md:flex sticky top-0 h-screen flex-col border-r border-pink-800 p-5">
-    <input class="mb-8 inline-flex rounded-full border px-5 py-1 text-sm font-bold border-red" placeholder="Search"></input>
+    <img src="Skylink.png" alt="logo" class="w-30 h-30 -ml-5 -mt-8">
     <nav class="space-y-4 text-2xl font-semibold">
-        <a href="home.php" class="block hover:text-pink-700">Home</a>
-        <a href="chats.php" class="block hover:text-pink-700">Chat</a>
-        <a href="profile.php" class="block hover:text-pink-700">Profile</a>
-        <a href="settings.php" class="block hover:text-pink-700">Settings</a>
+        <a href="home.php" class="block hover:text-pink-700 cursor-pointer">Home</a>
+        <a href="chats.php" class="block hover:text-pink-700 cursor-pointer">Chat</a>
+        <a href="profile.php" class="block hover:text-pink-700 cursor-pointer">Profile</a>
+        <a href="settings.php" class="block hover:text-pink-700 cursor-pointer">Settings</a>
     </nav>
     <div class="mt-auto space-y-3">
         <?php if (isset($_SESSION['user_id'])): ?>
-            <button onclick="openPostModal()" class="mt-auto rounded-full px-5 py-3 text-center font-bold text-white bg-pink-500 hover:bg-pink-600">+ New Post</button>
+            <button onclick="openPostModal()" class="mt-auto rounded-full px-5 py-3 text-center font-bold text-white bg-pink-500 hover:bg-pink-600 cursor-pointer">+ New Post</button>
         <?php endif; ?>
         <?php if (!isset($_SESSION['user_id'])): ?>
-            <button type="button" onclick="login()" class="mt-auto rounded-full px-5 py-3 text-center font-bold text-white bg-pink-500 hover:bg-pink-600">Login/Register</button>
+            <button type="button" onclick="login()" class="mt-auto rounded-full px-5 py-3 text-center font-bold text-white bg-pink-500 hover:bg-pink-600 cursor-pointer">Login/Register</button>
         <?php endif; ?>
     </div>
 </aside>
@@ -50,7 +50,7 @@
         
             <button
                 type="submit"
-                class="w-full rounded-2xl bg-pink-500 py-3 font-bold transition hover:bg-pink-600">
+                class="w-full rounded-2xl bg-pink-500 py-3 font-bold transition hover:bg-pink-600 cursor-pointer">
                 Login
             </button>
         
@@ -114,7 +114,7 @@
         
             <button
                 type="submit"
-                class="w-full rounded-2xl bg-pink-500 py-3 font-bold transition hover:bg-pink-600">
+                class="w-full rounded-2xl bg-pink-500 py-3 font-bold transition hover:bg-pink-600 cursor-pointer">
                 Register
             </button>
         

@@ -3,14 +3,14 @@
         <div class="mb-2 text-sm text-gray-300">↻ Reposted by <?= e($post['reposted_by']) ?></div>
     <?php endif; ?>
     <div class="flex gap-3">
-        <a href="profile.php?id=<?= (int)$post['user_id'] ?>" class="h-10 w-10 shrink-0 rounded-full bg-pink-500 overflow-hidden">
+        <a href="profile.php?id=<?= (int)$post['user_id'] ?>" class="h-10 w-10 shrink-0 rounded-full bg-pink-500 overflow-hidden cursor-pointer">
             <?php if(!empty($post['profile_picture_url'])): ?>
-                <img src="" alt="pfp" class="h-10 w-10 shrink-0 rounded-full">
+                <img src="<?= e($post['profile_picture_url']) ?>" alt="pfp" class="h-10 w-10 shrink-0 rounded-full object-cover">
             <?php endif; ?>
         </a>
         <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2">
-                <a href="profile.php?id=<?= (int)$post['user_id'] ?>" class="font-bold hover:underline">
+                <a href="profile.php?id=<?= (int)$post['user_id'] ?>" class="font-bold hover:underline cursor-pointer">
                     <?= e($post['username']) ?>
                 </a>
                 <span class="text-gray-300">
@@ -28,7 +28,7 @@
                 </span>
             </div>
             <a href="<?= (($post['content_type'] ?? 'post') === 'comment') ? 'comment.php?id=' . (int)$post['id'] : 'post.php?id=' . (int)$post['id'] ?>">
-                <div class="mt-1">
+                <div class="mt-1 cursor-pointer">
                     <?= e($post['content']) ?>
                 </div>
             </a>
@@ -39,7 +39,7 @@
                     <?php else: ?>
                         <input type="hidden" name="like_post_id" value="<?= (int)$post['id'] ?>">
                     <?php endif; ?>
-                    <button type="submit">♡ <?= (int)$post['like_count'] ?></button>
+                    <button type="submit" class="cursor-pointer">♡ <?= (int)$post['like_count'] ?></button>
                 </form>
                 <form method="POST">
                     <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
@@ -47,18 +47,17 @@
                     <?php else: ?>
                         <input type="hidden" name="repost_post_id" value="<?= (int)$post['id'] ?>">
                     <?php endif; ?>
-                    <button type="submit">↻ <?= (int)($post['repost_count'] ?? 0) ?></button>
+                    <button type="submit" class="cursor-pointer">↻ <?= (int)($post['repost_count'] ?? 0) ?></button>
                 </form>
-                <button>💬 <?= (int)$post['comment_count'] ?></button>
+                <button class="cursor-pointer">💬 <?= (int)$post['comment_count'] ?></button>
                 <form method="POST">
                     <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
                         <input type="hidden" name="favorite_comment_id" value="<?= (int)$post['id'] ?>">
                     <?php else: ?>
                         <input type="hidden" name="favorite_post_id" value="<?= (int)$post['id'] ?>">
                     <?php endif; ?>
-                    <button type="submit">☆ <?= (int)$post['favorite_count'] ?></button>
+                    <button type="submit" class="cursor-pointer">☆ <?= (int)$post['favorite_count'] ?></button>
                 </form>
-                <button>↗</button>
             </div>
         </div>
     </div>

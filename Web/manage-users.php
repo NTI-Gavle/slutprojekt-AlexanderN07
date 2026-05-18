@@ -58,7 +58,7 @@ $users = $stmt->fetchAll();
 </head>
 <body class="min-h-screen bg-fuchsia-950 text-white">
 <div class="mx-auto max-w-5xl p-6">
-    <a href="settings.php" class="mb-6 inline-block text-pink-400 hover:text-pink-300">
+    <a href="settings.php" class="mb-6 inline-block text-pink-400 hover:text-pink-300 cursor-pointer">
         ← Back
     </a>
     <h1 class="mb-6 text-4xl font-bold">Manage Users</h1>
@@ -77,7 +77,7 @@ $users = $stmt->fetchAll();
                         <?php if ((int)$u['id'] !== current_user_id()): ?>
                             <form method="POST">
                                 <input type="hidden" name="toggle_admin_id" value="<?= (int)$u['id'] ?>">
-                                <button type="submit" class="rounded-xl bg-pink-500 px-4 py-2 hover:bg-pink-600">
+                                <button type="submit" class="rounded-xl bg-pink-500 px-4 py-2 hover:bg-pink-600 cursor-pointer">
                                     <?php if ((int)$u['is_admin'] === 1): ?>
                                         Remove Admin
                                     <?php else: ?>
@@ -87,7 +87,7 @@ $users = $stmt->fetchAll();
                             </form>
                             <form method="POST">
                                 <input type="hidden" name="delete_user_id" value="<?= (int)$u['id'] ?>">
-                                <button type="submit" class="rounded-xl bg-red-500 px-4 py-2 hover:bg-red-600">
+                                <button type="submit" class="rounded-xl bg-red-500 px-4 py-2 hover:bg-red-600 cursor-pointer">
                                     Delete
                                 </button>
                             </form>

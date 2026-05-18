@@ -59,7 +59,7 @@ $replies = get_comment_replies($commentId);
     <?php include 'header.php'; ?>
     <div>
         <div class="block border-b border-pink-800 p-4 font-bold">
-            <button onclick="history.back()" class="-ml-3 w-20 h-15 hover:bg-fuchsia-900">←</button>
+            <button onclick="history.back()" class="-ml-3 w-20 h-15 hover:bg-fuchsia-900 cursor-pointer">←</button>
         </div>
         <article class="border-b border-pink-800 p-4">
             <div class="flex gap-3">
@@ -89,7 +89,7 @@ $replies = get_comment_replies($commentId);
                     <div class="mt-4 flex max-w-md justify-between text-gray-300">
                         <form method="POST">
                             <input type="hidden" name="like_comment_id" value="<?= (int)$comment['id'] ?>">
-                            <button type="submit">♡ <?= (int)$comment['like_count'] ?></button>
+                            <button type="submit" class="cursor-pointer">♡ <?= (int)$comment['like_count'] ?></button>
                         </form>
                         <form method="POST">
                             <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
@@ -97,14 +97,13 @@ $replies = get_comment_replies($commentId);
                             <?php else: ?>
                                 <input type="hidden" name="repost_post_id" value="<?= (int)$comment['id'] ?>">
                             <?php endif; ?>
-                            <button type="submit">↻ <?= (int)($comment['repost_count'] ?? 0) ?></button>
+                            <button type="submit" class="cursor-pointer">↻ <?= (int)($comment['repost_count'] ?? 0) ?></button>
                         </form>
-                        <button type="button">💬 <?= (int)$comment['comment_count'] ?></button>
+                        <button type="button" class="cursor-pointer">💬 <?= (int)$comment['comment_count'] ?></button>
                         <form method="POST">
                             <input type="hidden" name="favorite_comment_id" value="<?= (int)$comment['id'] ?>">
-                            <button type="submit">☆ <?= (int)$comment['favorite_count'] ?></button>
+                            <button type="submit" class="cursor-pointer">☆ <?= (int)$comment['favorite_count'] ?></button>
                         </form>
-                        <button type="button">↗</button>
                     </div>
                 </div>
             </div>
@@ -113,7 +112,7 @@ $replies = get_comment_replies($commentId);
             <form method="POST" class="border-b border-pink-800 p-4">
                 <textarea name="content" required placeholder="Write a reply..." class="h-28 w-full resize-none rounded-2xl border border-pink-800 bg-fuchsia-900 p-4 outline-none"></textarea>
                 <div class="mt-3 flex justify-end">
-                    <button class="rounded-full bg-pink-500 px-6 py-2 font-bold hover:bg-pink-600">
+                    <button class="rounded-full bg-pink-500 px-6 py-2 font-bold hover:bg-pink-600 cursor-pointer">
                         Reply
                     </button>
                 </div>
@@ -138,14 +137,14 @@ $replies = get_comment_replies($commentId);
                     </span>
                 </div>
                 <a href="comment.php?id=<?= (int)$reply['id'] ?>">
-                    <div class="mt-1">
+                    <div class="mt-1 cursor-pointer">
                         <?= e($reply['content']) ?>
                     </div>
                 </a>
                 <div class="mt-3 flex max-w-md justify-between text-gray-200">
                     <form method="POST">
                         <input type="hidden" name="like_comment_id" value="<?= (int)$reply['id'] ?>">
-                        <button type="submit">♡ <?= (int)$reply['like_count'] ?></button>
+                        <button type="submit" class="cursor-pointer">♡ <?= (int)$reply['like_count'] ?></button>
                     </form>
                     <form method="POST">
                         <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
@@ -153,14 +152,13 @@ $replies = get_comment_replies($commentId);
                         <?php else: ?>
                             <input type="hidden" name="repost_post_id" value="<?= (int)$reply['id'] ?>">
                         <?php endif; ?>
-                        <button type="submit">↻ <?= (int)($reply['repost_count'] ?? 0) ?></button>
+                        <button type="submit" class="cursor-pointer">↻ <?= (int)($reply['repost_count'] ?? 0) ?></button>
                     </form>
-                    <button>💬 <?= (int)$reply['comment_count'] ?></button>
+                    <button class="cursor-pointer">💬 <?= (int)$reply['comment_count'] ?></button>
                     <form method="POST">
                         <input type="hidden" name="favorite_comment_id" value="<?= (int)$reply['id'] ?>">
-                        <button type="submit">☆ <?= (int)$reply['favorite_count'] ?></button>
+                        <button type="submit" class="cursor-pointer">☆ <?= (int)$reply['favorite_count'] ?></button>
                     </form>
-                    <button>↗</button>
                 </div>
             </article>
         <?php endforeach; ?>

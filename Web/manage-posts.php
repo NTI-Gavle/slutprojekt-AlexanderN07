@@ -42,7 +42,7 @@ $posts = $stmt->fetchAll();
 </head>
 <body class="min-h-screen bg-fuchsia-950 text-white">
 <div class="mx-auto max-w-5xl p-6">
-    <a href="settings.php" class="mb-6 inline-block text-pink-400 hover:text-pink-300">
+    <a href="settings.php" class="mb-6 inline-block text-pink-400 hover:text-pink-300 cursor-pointer">
         ← Back
     </a>
     <h1 class="mb-6 text-4xl font-bold">Manage Posts</h1>
@@ -56,7 +56,7 @@ $posts = $stmt->fetchAll();
                 <p><?= e($post['content']) ?></p>
                 <form method="POST" class="mt-4">
                     <input type="hidden" name="delete_post_id" value="<?= (int)$post['id'] ?>">
-                    <button type="submit" class="rounded-xl bg-red-500 px-4 py-2 hover:bg-red-600">
+                    <button type="submit" class="rounded-xl bg-red-500 px-4 py-2 hover:bg-red-600 cursor-pointer">
                         Delete Post
                     </button>
                 </form>

@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account'])) {
                 <button onclick="openSettingsPopup('help-popup')" class="block hover:text-pink-700 cursor-pointer">Help</button>
                 <button onclick="openSettingsPopup('about-popup')" class="block hover:text-pink-700 cursor-pointer">About</button>
                 <hr class="border-pink-800">
-                <a href="logout.php" class="block text-pink-700">Log out</a>
+                <a href="logout.php" class="block text-pink-700 cursor-pointer">Log out</a>
             </section>
         </div>
         <?php include 'footer.php'; ?>
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account'])) {
                             required
                             class="w-full rounded-2xl border border-pink-800 bg-fuchsia-950 px-4 py-3 outline-none focus:border-pink-500">
                     </div>
-                    <button type="submit" name="update_account" class="rounded-2xl bg-pink-500 px-6 py-3 font-bold hover:bg-pink-600">
+                    <button type="submit" name="update_account" class="rounded-2xl bg-pink-500 px-6 py-3 font-bold hover:bg-pink-600 cursor-pointer">
                         Save
                     </button>
                 </form>
@@ -122,10 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account'])) {
                     </button>
                 </div>
                 <div class="space-y-4">
-                    <a href="manage-users.php" class="block w-full rounded-2xl border border-pink-800 p-4 text-left hover:border-pink-500">
+                    <a href="manage-users.php" class="block w-full rounded-2xl border border-pink-800 p-4 text-left hover:border-pink-500 cursor-pointer">
                         Manage Users
                     </a>
-                    <a href="manage-posts.php" class="block w-full rounded-2xl border border-pink-800 p-4 text-left hover:border-pink-500">
+                    <a href="manage-posts.php" class="block w-full rounded-2xl border border-pink-800 p-4 text-left hover:border-pink-500 cursor-pointer">
                         Manage Posts
                     </a>
                 </div>

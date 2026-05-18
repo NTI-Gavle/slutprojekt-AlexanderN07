@@ -10,7 +10,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="space-y-5">
             <div class="flex items-center gap-3">
             <?php foreach ($following as $followedUser): ?>
-                <a href="profile.php?id=<?= (int)$followedUser['id'] ?>" class="flex items-center gap-3 rounded-2xl p-2 hover:bg-fuchsia-900">
+                <a href="profile.php?id=<?= (int)$followedUser['id'] ?>" class="flex items-center gap-3 rounded-2xl p-2 hover:bg-fuchsia-900 cursor-pointer">
                     <div class="h-12 w-12 overflow-hidden rounded-full bg-pink-500">
                         <?php if (!empty($followedUser['profile_picture_url'])): ?>
                             <img src="<?= e($followedUser['profile_picture_url']) ?>" alt="pfp" class="h-full w-full object-cover">
@@ -30,9 +30,8 @@ if (isset($_SESSION['user_id'])) {
     <?php endif; ?>
 </aside>
 <nav class="fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-pink-800 bg-fuchsia-950 py-3 md:hidden">
-    <a href="home.php">Home</a>
-    <a href="notifications.php">Notif</a>
-    <a href="chats.php">Chat</a>
-    <a href="profile.php">Profile</a>
-    <a href="settings.php">Settings</a>
+    <a href="home.php" class="cursor-pointer">Home</a>
+    <a href="chats.php" class="cursor-pointer">Chat</a>
+    <a href="profile.php" class="cursor-pointer">Profile</a>
+    <a href="settings.php" class="cursor-pointer">Settings</a>
 </nav>

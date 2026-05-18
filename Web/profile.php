@@ -179,11 +179,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_bio']) && isse
                     <div class="flex flex-col">
                         <h2 class="mt-3 text-2xl font-bold"><?= e($profile['username']) ?></h2>
                         <p class="text-gray-200">@<?= e($profile['username']) ?></p>
+                        <div class="mt-2 flex gap-4 text-sm text-gray-300">
+                            <button type="button" onclick="openSettingsPopup('followers-popup')" class="cursor-pointer hover:text-pink-400">
+                                <b><?= (int)$profile['follower_count'] ?></b>
+                                Followers
+                            </button>
+                            <button type="button" onclick="openSettingsPopup('following-popup')" class="cursor-pointer hover:text-pink-400">
+                                <b><?= (int)$profile['following_count'] ?></b>
+                                Following
+                            </button>
+                        </div>
                     </div>
                     <?php if ($profileId !== current_user_id()): ?>
                         <form method="POST" class="mt-4">
                             <input type="hidden" name="follow_user_id" value="<?= (int)$profile['id'] ?>">
-                            <button type="submit" class="rounded-full bg-pink-500 px-6 py-2 font-bold hover:bg-pink-600">
+                            <button type="submit" class="rounded-full bg-pink-500 px-6 py-2 font-bold hover:bg-pink-600 cursor-pointer">
                                 <?php if (is_following($profile['id'], current_user_id())): ?>
                                     Unfollow
                                 <?php else: ?>
@@ -196,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_bio']) && isse
                 <?php if ($profileId === current_user_id()): ?>
                     <form method="POST" class="mt-3 mb-3">
                         <textarea name="bio" placeholder="Write your bio..." class="w-full resize-none rounded-2xl border border-pink-800 bg-fuchsia-900 p-4 outline-none"><?= e($profile['bio'] ?? '') ?></textarea>
-                        <button type="submit" name="update_bio" class="mt-3 rounded-full bg-pink-500 px-6 py-2 font-bold hover:bg-pink-600">
+                        <button type="submit" name="update_bio" class="mt-3 rounded-full bg-pink-500 px-6 py-2 font-bold hover:bg-pink-600 cursor-pointer">
                             Save Bio
                         </button>
                     </form>
@@ -209,13 +219,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_bio']) && isse
                 <hr class="border-pink-800">
                 <div class="mt-4 flex gap-6 text-gray-200">
                     <?php if($profileId === current_user_id()): ?>
-                        <a href="profile.php?tab=posts" class="hover:text-pink-400"><b><?= (int)$profile['post_count'] + (int)$profile['repost_count'] ?></b> Posts</a>
+                        <a href="profile.php?tab=posts" class="hover:text-pink-400 cursor-pointer"><b><?= (int)$profile['post_count'] + (int)$profile['repost_count'] ?></b> Posts</a>
                     <?php else: ?>
                         <p><b><?= (int)$profile['post_count'] + (int)$profile['repost_count'] ?></b> Posts</p>
                     <?php endif; ?>
                     <?php if($profileId === current_user_id()): ?>
-                        | <a href="profile.php?tab=likes" class="hover:text-pink-400"><b><?= (int)$profile['liked_count'] ?></b> Liked</a> |
-                        <a href="profile.php?tab=favorites" class="hover:text-pink-400"><b><?= (int)$profile['favorite_count'] ?></b> Favorites</a>
+                        | <a href="profile.php?tab=likes" class="hover:text-pink-400 cursor-pointer"><b><?= (int)$profile['liked_count'] ?></b> Liked</a> |
+                        <a href="profile.php?tab=favorites" class="hover:text-pink-400 cursor-pointer"><b><?= (int)$profile['favorite_count'] ?></b> Favorites</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -223,6 +233,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_bio']) && isse
                 <?php include 'post-card.php'; ?>
             <?php endforeach; ?>
         </section>
+    </div>
+    <div id="followers-popup" class="hidden fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4" onclick="closeSettingsPopup('followers-popup')">
+        <div onclick="event.stopPropagation()" class="w-full max-w-xl rounded-3xl border border-pink-800 bg-fuchsia-900 p-6">
+            <div class="mb-6 flex items-center justify-between">
+                <h2 class="text-3xl font-bold">Followers</h2>
+                <button onclick="closeSettingsPopup('followers-popup')" class="text-3xl cursor-pointer">
+                    ×
+                </button>
+            </div>
+            <div class="space-y-3">
+                <?php foreach (get_followers($profileId) as $user): ?>
+                    <a href="profile.php?id=<?= (int)$user['id'] ?>" class="flex items-center gap-3 rounded-2xl p-3 hover:bg-fuchsia-950">
+                        <div class="h-12 w-12 overflow-hidden rounded-full bg-pink-500">
+                            <?php if (!empty($user['profile_picture_url'])): ?>
+                                <img src="<?= e($user['profile_picture_url']) ?>" alt="pfp" class="h-full w-full object-cover">
+                            <?php endif; ?>
+                        </div>
+                        <div>
+                            <p class="font-bold"><?= e($user['username']) ?></p>
+                            <p class="text-gray-300">@<?= e($user['username']) ?></p>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <div id="following-popup" class="hidden fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4" onclick="closeSettingsPopup('following-popup')">
+        <div onclick="event.stopPropagation()" class="w-full max-w-xl rounded-3xl border border-pink-800 bg-fuchsia-900 p-6">
+            <div class="mb-6 flex items-center justify-between">
+                <h2 class="text-3xl font-bold">Following</h2>
+                <button onclick="closeSettingsPopup('following-popup')" class="text-3xl cursor-pointer">
+                    ×
+                </button>
+            </div>
+            <div class="space-y-3">
+                <?php foreach (get_following($profileId) as $user): ?>
+                    <a href="profile.php?id=<?= (int)$user['id'] ?>" class="flex items-center gap-3 rounded-2xl p-3 hover:bg-fuchsia-950">
+                        <div class="h-12 w-12 overflow-hidden rounded-full bg-pink-500">
+                            <?php if (!empty($user['profile_picture_url'])): ?>
+                                <img src="<?= e($user['profile_picture_url']) ?>" alt="pfp" class="h-full w-full object-cover">
+                            <?php endif; ?>
+                        </div>
+                        <div>
+                            <p class="font-bold"><?= e($user['username']) ?></p>
+                            <p class="text-gray-300">@<?= e($user['username']) ?></p>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
     </div>
     <?php include 'footer.php'; ?>
 </div>

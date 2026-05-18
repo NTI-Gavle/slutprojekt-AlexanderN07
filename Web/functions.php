@@ -196,7 +196,9 @@ function get_profile(int $userId): ?array {
             (SELECT COUNT(*) FROM comment_likes cl WHERE cl.user_id = u.id) AS liked_count,
             (SELECT COUNT(*) FROM favorites f WHERE f.user_id = u.id) +
             (SELECT COUNT(*) FROM comment_favorites cf WHERE cf.user_id = u.id) AS favorite_count,
-            (SELECT COUNT(*) FROM reposts r WHERE r.user_id = u.id) AS repost_count
+            (SELECT COUNT(*) FROM reposts r WHERE r.user_id = u.id) AS repost_count,
+            (SELECT COUNT(*) FROM follows f WHERE f.following_id = u.id) AS follower_count,
+            (SELECT COUNT(*) FROM follows f WHERE f.follower_id = u.id) AS following_count
         FROM users u
         WHERE u.id = ?
         LIMIT 1
@@ -645,6 +647,22 @@ function get_chat_users(int $userId): array {
         JOIN users u
             ON u.id = f1.following_id
         WHERE f1.follower_id = ?
+        ORDER BY u.username ASC
+    ");
+    $stmt->execute([
+        $userId
+    ]);
+    return $stmt->fetchAll();
+}
+function get_followers(int $userId): array {
+    global $pdo;
+    $stmt = $pdo->prepare("
+        SELECT
+            u.*
+        FROM follows f
+        JOIN users u
+            ON u.id = f.follower_id
+        WHERE f.following_id = ?
         ORDER BY u.username ASC
     ");
     $stmt->execute([
