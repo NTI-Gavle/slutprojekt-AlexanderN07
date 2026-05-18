@@ -26,6 +26,18 @@
                     }
                     ?>
                 </span>
+                <?php if (isset($_SESSION['user_id']) && (int)$post['user_id'] === current_user_id()): ?>
+                    <form method="POST">
+                        <?php if (($post['content_type'] ?? 'post') === 'comment'): ?>
+                            <input type="hidden" name="delete_comment_id" value="<?= (int)$post['id'] ?>">
+                        <?php else: ?>
+                            <input type="hidden" name="delete_post_id" value="<?= (int)$post['id'] ?>">
+                        <?php endif; ?>
+                        <button type="submit" class="text-red-400 hover:text-red-500 cursor-pointer">
+                            Delete
+                        </button>
+                    </form>
+                <?php endif; ?>
             </div>
             <a href="<?= (($post['content_type'] ?? 'post') === 'comment') ? 'comment.php?id=' . (int)$post['id'] : 'post.php?id=' . (int)$post['id'] ?>">
                 <div class="mt-1 cursor-pointer">

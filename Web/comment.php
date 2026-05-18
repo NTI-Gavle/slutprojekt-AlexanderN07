@@ -5,6 +5,22 @@ if ($commentId <= 0){
     die('Invalid comment.');
 }
 $comment = get_comment($commentId);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id']) && isset($_SESSION['user_id'])) {
+    global $pdo;
+    $deleteCommentId = (int)$_POST['delete_comment_id'];
+    $stmt = $pdo->prepare("
+        UPDATE comments
+        SET is_deleted = 1
+        WHERE id = ?
+        AND user_id = ?
+    ");
+    $stmt->execute([
+        $deleteCommentId,
+        current_user_id()
+    ]);
+    header("Location: comment.php?id=$commentId");
+    exit;
+}
 if (!$comment){
     die('Comment not found.');
 }
@@ -82,6 +98,12 @@ $replies = get_comment_replies($commentId);
                             }
                             ?>
                         </span>
+                        <form method="POST">
+                            <input type="hidden" name="delete_comment_id" value="<?= (int)$comment['id'] ?>">
+                            <button type="submit" class="text-red-400 hover:text-red-500 cursor-pointer">
+                                Delete
+                            </button>
+                        </form>
                     </div>
                     <div class="mt-3 text-lg">
                         <?= e($comment['content']) ?>
@@ -135,6 +157,12 @@ $replies = get_comment_replies($commentId);
                         }
                         ?>
                     </span>
+                    <form method="POST">
+                            <input type="hidden" name="delete_comment_id" value="<?= (int)$reply['id'] ?>">
+                            <button type="submit" class="text-red-400 hover:text-red-500 cursor-pointer">
+                                Delete
+                            </button>
+                        </form>
                 </div>
                 <a href="comment.php?id=<?= (int)$reply['id'] ?>">
                     <div class="mt-1 cursor-pointer">

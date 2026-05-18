@@ -1,5 +1,21 @@
 <?php
 require_once 'functions.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post_id']) && isset($_SESSION['user_id'])) {
+    global $pdo;
+    $postId = (int)$_POST['delete_post_id'];
+    $stmt = $pdo->prepare("
+        UPDATE posts
+        SET is_deleted = 1
+        WHERE id = ?
+        AND user_id = ?
+    ");
+    $stmt->execute([
+        $postId,
+        current_user_id()
+    ]);
+    header('Location: home.php');
+    exit;
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id']) && trim($_POST['content'] ?? '') !== ''){
     create_post(current_user_id(), trim($_POST['content']));
     header('Location: home.php');

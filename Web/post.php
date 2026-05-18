@@ -4,6 +4,38 @@ $postId = (int)($_GET['id'] ?? 0);
 if($postId <=0){
     die('Invalid post');
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post_id']) && isset($_SESSION['user_id'])) {
+    global $pdo;
+    $deletePostId = (int)$_POST['delete_post_id'];
+    $stmt = $pdo->prepare("
+        UPDATE posts
+        SET is_deleted = 1
+        WHERE id = ?
+        AND user_id = ?
+    ");
+    $stmt->execute([
+        $deletePostId,
+        current_user_id()
+    ]);
+    header('Location: home.php');
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id']) && isset($_SESSION['user_id'])) {
+    global $pdo;
+    $commentId = (int)$_POST['delete_comment_id'];
+    $stmt = $pdo->prepare("
+        UPDATE comments
+        SET is_deleted = 1
+        WHERE id = ?
+        AND user_id = ?
+    ");
+    $stmt->execute([
+        $commentId,
+        current_user_id()
+    ]);
+    header("Location: post.php?id=$postId");
+    exit;
+}
 $post = get_post($postId);
 if(!$post){
     die('Post not found');
@@ -100,6 +132,14 @@ $comments = get_comments($postId);
                     }
                     ?>
                 </span>
+                <?php if ( isset($_SESSION['user_id']) && (int)$post['user_id'] === current_user_id()): ?>
+                    <form method="POST">
+                        <input type="hidden" name="delete_post_id" value="<?= (int)$post['id'] ?>">
+                        <button type="submit" class="text-red-400 hover:text-red-500 cursor-pointer">
+                            Delete
+                        </button>
+                    </form>
+                <?php endif; ?>
             </div>
             <div class="mt-1">
                 <?= e($post['content']) ?>
@@ -151,6 +191,14 @@ $comments = get_comments($postId);
                         }
                         ?>
                     </span>
+                    <?php if ( isset($_SESSION['user_id']) && (int)$comment['user_id'] === current_user_id()): ?>
+                        <form method="POST">
+                            <input type="hidden" name="delete_comment_id" value="<?= (int)$comment['id'] ?>">
+                            <button type="submit" class="text-red-400 hover:text-red-500 cursor-pointer">
+                                Delete
+                            </button>
+                        </form>
+                    <?php endif; ?>
                 </div>
                 <a href="comment.php?id=<?= (int)$comment['id'] ?>">
                     <div class="mt-1 cursor-pointer">

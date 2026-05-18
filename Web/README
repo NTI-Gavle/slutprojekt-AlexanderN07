@@ -1,0 +1,73 @@
+Skylink
+
+Skylink is a clone of bluesky built with PHP, MySQL, JavaScript, Tailwind CSS, and PDO.  
+The platform allows users to create posts, comment, follow other users, send dms, and interact through likes, favorites, and reposts.
+
+---
+
+Features
+
+User System
+- Registration and login
+- Secure password hashing
+- Logout functionality
+- Account settings
+
+Posts
+- Create posts
+- Like posts
+- Favorite posts
+- Repost posts
+- Comment on posts
+- Reply to comments
+- Reply to replies
+- Delete own posts/comments/replies
+
+Profiles
+- Custom profile picture
+- Custom banner image
+- Editable bio
+- Follow / unfollow users
+- Followers & following system
+- Profile tabs:
+  - Posts
+  - Likes
+  - Favorites
+
+Messaging
+- Direct messaging system
+- Chat list page
+- Real-time styled conversation layout
+
+Admin Features
+- Delete users
+- Promote/remove admins
+- Delete posts
+
+UI / UX
+- Responsive layout
+- Mobile navigation bar
+- Tailwind CSS styling
+- Modal popups
+
+Database
+Main tables include:
+    users
+    posts
+    comments
+    likes
+    favorites
+    reposts
+    follows
+    dms
+    comment_likes
+    comment_favorites
+
+Stuff used to make the webstie
+- PHP
+- MySQL
+- HeidiSQL
+- PDO
+- JavaScript
+- Tailwind CSS
+- HTML5

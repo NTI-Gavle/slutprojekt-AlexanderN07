@@ -12,6 +12,38 @@ $profile = get_profile($profileId);
 if (!$profile) {
     die('Profile not found.');
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post_id']) && isset($_SESSION['user_id'])) {
+    global $pdo;
+    $postId = (int)$_POST['delete_post_id'];
+    $stmt = $pdo->prepare("
+        UPDATE posts
+        SET is_deleted = 1
+        WHERE id = ?
+        AND user_id = ?
+    ");
+    $stmt->execute([
+        $postId,
+        current_user_id()
+    ]);
+    header('Location: profile.php');
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id']) && isset($_SESSION['user_id'])) {
+    global $pdo;
+    $commentId = (int)$_POST['delete_comment_id'];
+    $stmt = $pdo->prepare("
+        UPDATE comments
+        SET is_deleted = 1
+        WHERE id = ?
+        AND user_id = ?
+    ");
+    $stmt->execute([
+        $commentId,
+        current_user_id()
+    ]);
+    header('Location: profile.php');
+    exit;
+}
 $tab = $_GET['tab'] ?? 'posts';
 
 $allowedTabs = [
@@ -80,25 +112,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repost_comment_id']) 
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile_media'])) {
     global $pdo;
+    $allowedTypes = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp'
+    ];
     $updates = [];
     $values = [];
-    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === 0) {
-        $pfpName = time() . '_' . $_FILES['profile_picture']['name'];
-        move_uploaded_file(
-            $_FILES['profile_picture']['tmp_name'],
-            'uploads/' . $pfpName
+    if ( isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === 0 ) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file(
+            $finfo,
+            $_FILES['profile_picture']['tmp_name']
         );
+        finfo_close($finfo);
+        if (!isset($allowedTypes[$mime])) {
+            die('Invalid profile picture type.');
+        }
+        $extension = $allowedTypes[$mime];
+        $pfpName = bin2hex(random_bytes(16)) . '.' . $extension;
+        $uploadPath = 'uploads/' . $pfpName;
+        if (!move_uploaded_file(
+            $_FILES['profile_picture']['tmp_name'],
+            $uploadPath
+        )) {
+            die('Failed to upload profile picture.');
+        }
         $updates[] = "profile_picture_url = ?";
-        $values[] = 'uploads/' . $pfpName;
+        $values[] = $uploadPath;
     }
     if (isset($_FILES['banner_picture']) && $_FILES['banner_picture']['error'] === 0) {
-        $bannerName = time() . '_' . $_FILES['banner_picture']['name'];
-        move_uploaded_file(
-            $_FILES['banner_picture']['tmp_name'],
-            'uploads/' . $bannerName
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file(
+            $finfo,
+            $_FILES['banner_picture']['tmp_name']
         );
+        finfo_close($finfo);
+        if (!isset($allowedTypes[$mime])) {
+            die('Invalid banner image type.');
+        }
+        $extension = $allowedTypes[$mime];
+        $bannerName = bin2hex(random_bytes(16)) . '.' . $extension;
+        $uploadPath = 'uploads/' . $bannerName;
+        if (!move_uploaded_file(
+            $_FILES['banner_picture']['tmp_name'],
+            $uploadPath
+        )) {
+            die('Failed to upload banner image.');
+        }
         $updates[] = "banner_picture_url = ?";
-        $values[] = 'uploads/' . $bannerName;
+        $values[] = $uploadPath;
     }
     if (!empty($updates)) {
         $values[] = current_user_id();
